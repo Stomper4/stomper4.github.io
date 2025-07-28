@@ -9,7 +9,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Caleb Lerch | Placeholder</title>
+    <title>Caleb Lerch | AL1C3CTF</title>
     <meta name="author" content="Caleb Lerch" />
     <meta name="description" content="My personal journey and portfolio into the world of information security and ethical hacking." />
     <meta name="keywords" content="Caleb Lerch, hacking, security, cybersecurity, research, certification, analyst" />
@@ -117,7 +117,7 @@
             <br>
 
             <h3>Challenge 1: Manipulating Code</h3>
-            <p>Mad Hatter's Message</p>
+            <a href=https://github.com/Stomper4/AL1C3CTF/blob/main/Mad%20Hatters%20Message/Walkthrough1/RE_chal1-walkthrough.md>Mad Hatter's Message</a>
             <p>This challenge provided contestants with obfuscated source code written in C. The source code was for a program which took 5 integer arguments and if they were correct, it printed the flag. If contestants were taking the ISS course at SAIT, this challenge required skills learned in the first semester programming class.</p>
 
             <p>The difficulty I had was to hide the flag in such a fashion that it wasn't just an encryption challenge. The contestant couldn't find the flag variable in the source code and attack the obfuscation of just that variable. To accomplish this, I wrote the code to derive the flag from the integer arguments entered by the user. The arguments were rotated for obfuscation, then tested against specific keys to check if they were correct. Then I created a character pointer with the same address as the integer pointer. This allowed me to work with integers in the source code, but print the flag as a string of letters.</p>
@@ -126,21 +126,21 @@
             <br>
 
             <h3>Challenge 2: Function Pointers</h3>
-            <p>Knave of Hearts' Payload</p>
+            <a href=https://github.com/Stomper4/AL1C3CTF/blob/main/Knave%20of%20Hearts'%20Payload/Walkthrough2/RE_chal2-walkthrough.md>Knave of Hearts' Payload</a>
             <p>This challenge provided contestants with shellcode that they could execute on a kali machine to print the flag. It was very easy to make (I used msfvenom) and the goal was to have contestants explore how to execute shellcode from memory. Contestants could load the code in any way they wanted, in my write up I had a basic C program that used a function pointer to load shellcode into memory, and then execute it.</p>
             
             <p>If contestants were taking the ISS program, They would have done this multiple times in the 3rd semester exploitation class.</p>
             <br>
 
             <h3>Challenge 3: Live Debugging</h3>
-            <p>Caterpillar's Binary</p>
+            <a href=https://github.com/Stomper4/AL1C3CTF/blob/main/Caterpillar's%20Binary/Walkthrough3/RE_chal3-walkthrough.md>Caterpillar's Binary</a>
             <p>This is the first challenge that supplied the contestants with a binary file rather than an ascii file. It was a very simple program that asks the user for a password, and if they enter the password it prints the flag. In the binary I stored the password as a hash, and the flag was encrypted, so printing ascii strings from the binary would not immediately show the answer.</p>
 
             <p>The intended solve was to use GDB (debugger) to explore both program flow options after the program checked the password. If the contestants were taking the ISS program, they would have learned how to do this in the second semester computer architecture class.</p>
             <br>
 
             <h3>Challenge 4: Altering a File</h3>
-            <p>The Mirror is Broken</p>
+            <a href=https://github.com/Stomper4/AL1C3CTF/blob/main/The%20Mirror%20is%20Broken/Walkthrough4/RE_chal4-walkthrough.md>The Mirror is Broken</a>
             <p>This challenge was a little more CTF style random chaos. If there were experienced players that had breezed through the last 3 challenges quick, this is where I wanted to hang them up. The twist was that I reversed the entire binary, the last byte was first, etc. You could discover this by running strings, seeing they were backwards, then looking for backwards file headers to determine the file type and best way to fix. Once the file was reversed, it played a similar game as Challenge 3. The main change was a parent process that killed all execution after 5 seconds. Contestants who were debugging, no longer had time to explore all the potential program flows.</p>
 
             <p>My write up shows a similar attack method as I used in challenge 3, but using a different tool. I still focus on the jump logic after checking the password. Instead of using GDB debugger to change the flag in real time, I used Ghidra to overwrite the jump instruction and change the flow.</p>
