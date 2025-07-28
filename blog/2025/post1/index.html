@@ -203,7 +203,7 @@
     
     <p>1Password enterprise accounts have secret and shared vaults. The secret vault is unique per user and holds all user credentials. The shared vault is given to multiple users and holds any credentials used by more than one person. </p>
 
-    <p>Anyone with write access to a shared vault can inject the malicious CSV payloads into the shared vault. The entire shared vault gets exported along with the private vault every time a user exports their passwords. When the payload is triggered after an export, all the shared and private credentials are sent to the hacker.</p>
+    <p>Anyone with write access to a shared vault can inject the malicious CSV payloads into the shared vault. <b>The entire shared vault gets exported along with the private vault</b> every time a user exports their passwords. When the payload is triggered after an export, all the shared and <b>private credentials are sent to the hacker.</b></p>
 
     <p>The threat profile for this vulnerability is a malicious insider. Someone from HR or IT instructs an employee from finance to perform a test backup of their password manager, and then steals the user's credentials to banks and/or financial services.</p>
     
