@@ -124,15 +124,15 @@
 
     <p> After verifying the crash, the first addition to my lab was the <a href=https://rr-project.org/>Record and Replay Framework</a> (rr). This tool allowed me to record the application crash in the GNU debugger and replay it as many times as I needed. I stepped forwards and backwards through key events in the debugger to better understand the conditions and the code. </p>
 
-    <p> Starting RR to record the crash. Link to ./pcores explanation <a href=https://linuxjedi.co.uk/using-rr-on-newer-intel-cpus/>here</a>.
+    <p> Starting RR to record the crash: Link to ./pcores explanation <a href=https://linuxjedi.co.uk/using-rr-on-newer-intel-cpus/>here</a>.</p>
 
-    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox1.png"></p>
+    <p><img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox1.png"></p>
 
     <p> The first area of the code that I investigated was the cause of the SIGSEV error. (SIGSEV is the code for a segmentation fault in linux.) I found a null pointer dereference, which was hardcoded in the source code. (Image below) This was confusing to me, and emphasized the need for a debugging build, so I could compare the information I am seeing in the debugger with the source code. </p>
 
-    <p> The assembly code clearing the A register, then copying a value to the location stored in the register. 
+    <p> The assembly code clearing the A register, then copying a value to the location stored in the register:</p>
     
-      <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox2.png"></p>
+      <p><img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox2.png"></p>
 
     <p>This code turned out to be part of a defensive function, causing a crash when unstable conditions are discovered during runtime. Causing an immediate crash may save key information about the cause in the crash logs, and prevents further exploitation of the condition. </p>
 
@@ -143,17 +143,17 @@
     </ul>  
     </p>
 
-    <p> I ran my new Firefox build with rr and recreated the crash. An assertion error printed to my terminal.  
+    <p> I ran my new Firefox build with rr and recreated the crash. An assertion error printed to my terminal: 
       <pre style="white-space: pre-wrap; word-wrap: break-word;"><code>[803288] Assertion failure: aLength <= kMax (string is too large), at /home/caleb/Documents/SecRe/firefox/firefox/xpcom/string/nsTStringRepr.h:89</code></pre></p>
 
     <p>The Firefox source code is by far the largest repo I have tried to understand. Starting at the file nsTStringRepr.h and working backwards to the input source, as well as comparing what I was reading to real instructions recorded in my debugger helped me to sort out the cause of the fault.</p>
 
     <p>nsTStringRepr.h shows that the "size" attribute of a string is stored in a uint32 variable type. (Max size of 0xFFFFFFFF) There is a check to confirm the size is small enough to be cast to an int32 (Max size 0x7FFFFFFF) which may happen later in the program. The assertion error occurs when the actual string size is larger than an int32 and smaller than an uint32. </p>
 
-    <p>The memory map of the program, showing the relevant heap allocation with size 0x80000000.
+    <p>The memory map of the program, showing the relevant heap allocation with size 0x80000000:</p>
 
-      <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox3.png"></p>
-    </p>
+      <p><img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox3.png"></p>
+    
 
     <p>Throughout this project I recorded several instances of the crash, I frequently took breaks and then restarted. I picked up a little trick with rr to jump into the relevant code sections quickly:
       <ul>
@@ -163,10 +163,10 @@
       </ul> 
       This allowed me to stop the debugger close to the right location without knowing what function to add a breakpoint to.</p>
 
-    <p>The replay command I would use for this output is <code>rr replay -g 421344</code>.
+    <p>The replay command I would use for this output is <code>rr replay -g 421344</code>:</p>
     
-    <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox4.png">
-    </p>
+    <p><img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox4.png"></p>
+    
 
     <p>Pausing just before the crash is good for taking a stack trace and understanding the program flow that leads to the assertion error. This was a significant help in my efforts to find the input source during my analysis of the source code. </p>
 
@@ -183,11 +183,11 @@
 
     <p> When examining variables GDB prints the contents of a memory location rather than the pointer address, except in this case the contents of the service worker were too large and it would hang. The command <code>(gdb) set print elements &lt;VALUE&gt;</code> is necessary to restrict the length of output. </p>
 
-    <p>I wrote a small script to remove the addresses and decode the UTF-16 output given by GDB when reading the raw memory values. The following image shows the original service worker, in readable form, taken from the heap using GDB and rr. </p>
+    <p>I wrote a small script to remove the addresses and decode the UTF-16 output given by GDB when reading the raw memory values. The following image shows the original service worker, in readable form, taken from the heap using GDB and rr: </p>
 
     <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox5.png"></p>
 
-    <p>Before deriving the length of aData, the whitespace was stripped by string functions in Firefox. The following image shows the memory after the program made these changes.</p>
+    <p>Before deriving the length of aData, the whitespace was stripped by string functions in Firefox. The following image shows the memory after the program made these changes:</p>
 
     <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox6.png"></p>
 
