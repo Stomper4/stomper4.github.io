@@ -122,6 +122,9 @@
 
     <p> CVE-2026-0889 is a Firefox remote crash triggered by registering an oversized service worker. This research was a joint effort with Elysee Franchuk, who discovered the condition while we both explored potential attack paths. This post will describe my process performing the root cause analysis, as well as the patch analysis.</p>
 
+    <p><br></p>
+    <h2>Recording the Crash</h2>
+
     <p> After verifying the crash, the first addition to my lab was the <a href=https://rr-project.org/>Record and Replay Framework</a> (rr). This tool allowed me to record the application crash in the GNU debugger and replay it as many times as I needed. I stepped forwards and backwards through key events in the debugger to better understand the conditions and the code. </p>
 
     <p> Starting RR to record the crash: Link to ./pcores explanation <a href=https://linuxjedi.co.uk/using-rr-on-newer-intel-cpus/>here</a>.</p>
@@ -148,12 +151,18 @@
 
     <p>The Firefox source code is by far the largest repo I have tried to understand. Starting at the file nsTStringRepr.h and working backwards to the input source, as well as comparing what I was reading to real instructions recorded in my debugger helped me to sort out the cause of the fault.</p>
 
+    <p><br></p>
+    <h2>Finding the Root Cause</h2>
+
     <p>nsTStringRepr.h shows that the "size" attribute of a string is stored in a uint32 variable type. (Max size of 0xFFFFFFFF) There is a check to confirm the size is small enough to be cast to an int32 (Max size 0x7FFFFFFF) which may happen later in the program. The assertion error occurs when the actual string size is larger than an int32 and smaller than an uint32. </p>
 
     <p>The memory map of the program, showing the relevant heap allocation with size 0x80000000:</p>
 
       <p><img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Firefox3.png"></p>
     
+
+    <p><br></p>
+    <h2>Analyzing the Code Path</h2>
 
     <p>Throughout this project I recorded several instances of the crash, I frequently took breaks and then restarted. I picked up a little trick with rr to jump into the relevant code sections quickly:
       <ul>
@@ -196,6 +205,9 @@
     <p>This taint propagation is the fundamental reason that a defensive crash is the best option at this point in the program flow. The boundary enforcement prevents the string functions from passing a value that is too large to be handled by other areas of the code, but it does not know why this value is corrupt. The string functions do not know what input source caused this corruption, or how many other variables are tainted.</p>
 
     <p>Further exploitation is prevented, but this crash is an example of a denial of service attack. It has a security impact and CVSS score because it impacts the availability of Firefox.</p>
+
+    <p><br></p>
+    <h2>Patch Analysis</h2>
 
     <p>The patch addresses these issues by moving the boundary enforcement to the input source. This is fundamentally different because when the boundary enforcement triggers an import failure, the program knows the cause, the scope of damage, and how to safely proceed.</p>
 
