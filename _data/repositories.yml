@@ -1,0 +1,11 @@
+github_users:
+  - stomper4
+
+repo_description_lines_max: 2
+
+
+github_repos:
+- Stomper4/BSides2026
+- Stomper4/AL1C3CTF
+- Stomper4/DLL_Sideloading_PoC
+
