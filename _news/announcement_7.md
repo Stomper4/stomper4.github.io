@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-Spoke at BSides Calgary 2026!
+Speaker at BSides Calgary 2026!

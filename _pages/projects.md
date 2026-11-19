@@ -5,7 +5,7 @@ permalink: /projects/
 description: A growing collection of educational projects.
 nav: true
 nav_order: 2
-display_categories: [CTF]
+display_categories: [CTF, Tooling]
 horizontal: false
 ---
 

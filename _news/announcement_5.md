@@ -5,4 +5,4 @@ inline: true
 related_posts: false
 ---
 
-Appeared as a Podcast Guest on Hackers on the Rocks with Evan Dornbush and Casey Ellis!
+Appeared as a podcast guest on Hackers on the Rocks with Evan Dornbush and Casey Ellis!
